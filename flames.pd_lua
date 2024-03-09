@@ -35,17 +35,36 @@ end
 
 -------------------------------------------------------------------------------
 
--- initializing methods and state
+-- initializing methods and state (with defaults or given arguments)
 --
 -- creates self.pd_args for saving state
 -- and self.pd_method_table for look-ups:
 -- 1. get corresponding function is defined
 -- 2. get state index for saving method states
 -- 3. get method's argument count
-function flames:init_pd_methods(methods, args)
+function flames:init_pd_methods(methods, atoms)
   self.pd_method_table = {}
   self.pd_args = {}
-  local valueIndex = 1 -- index for pd_args
+
+  -- handle kwargs and args
+  local kwargs = {}
+  local args = {}
+  local collectKey = nil
+  for _, atom in ipairs(atoms) do
+    if type(atom) ~= "number" and string.sub(atom, 1, 1) == "-" then
+      -- start collecting values for a new key if key detected
+      collectKey = string.sub(atom, 2)
+      kwargs[collectKey] = {}
+    elseif collectKey then
+      -- if currently collecting values for a key, add this atom to that key's table
+      table.insert(kwargs[collectKey], atom)
+    else
+      -- otherwise treat as a positional argument
+      table.insert(args, atom)
+    end
+  end
+
+  local valueIndex = 1 -- index for pd_args and atoms
   for _, v in ipairs(methods) do
     local method_name = "pd_" .. v.name
     -- initialize method table entry if a corresponding method exists
@@ -59,9 +78,9 @@ function flames:init_pd_methods(methods, args)
         self.pd_method_table[v.name] = self.pd_method_table[v.name] or {}
         self.pd_method_table[v.name].index = valueIndex
         self.pd_method_table[v.name].arg_count = #v.default
-        -- populate pd_args and increment valueIndex for each default value
+        -- populate pd_args with defaults
         for _, value in ipairs(v.default) do
-          self.pd_args[valueIndex] = value
+          self.pd_args[valueIndex] = atoms[valueIndex] or value
           valueIndex = valueIndex + 1
         end
       end
@@ -69,22 +88,8 @@ function flames:init_pd_methods(methods, args)
       self:error('no function \''..method_name..'\' defined')
     end
   end
-
-  -- handle creation flags
-  local flags = {}
-  local collectKey = nil
-  for _, arg in ipairs(args) do
-    if type(arg) ~= "number" and string.sub(arg, 1, 1) == "-" then
-    -- start collecting values for a new key if key detected
-      collectKey = string.sub(arg, 2)
-      flags[collectKey] = {}
-    elseif collectKey then
-    -- if currently collecting values for a key, add this arg to key's table
-      table.insert(flags[collectKey], arg)
-    end
-  end
-  for k, v in pairs(flags) do
-    self:handle_pd_message(k, v)
+  for msg, values in pairs(kwargs) do
+    self:handle_pd_message(msg, values)
   end
 end
 
@@ -107,6 +112,6 @@ function flames:handle_pd_message(msg, atoms)
     -- update object state
     self:set_args(self.pd_args)
   else
-    self:error('no method for `'..msg..'\'')
+    self:error('missing method definition for `'..msg..'\'')
   end
 end
