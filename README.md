@@ -1,5 +1,11 @@
 # pdlua-flames
-a simple pdlua example for handling **fla**gs, **me**ssages and **s**tate management
+a simple pdlua example object handling **fla**gs, **me**ssages and **s**tate management
+
+requires Pd (Pure Data) and up-to-date `pdlua` extension:
+* https://puredata.info/downloads
+* https://github.com/agraef/pd-lua 
+
+---
 
 the actual functionality of the pdlua object is then defined like this:
 
