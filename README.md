@@ -41,7 +41,7 @@ function flames_demo:pd_novalue()
   pd.post('no value here')
 end
 
--- message are then handled with the handle_pd_message method
+-- messages are then handled with the handle_pd_message() method
 function flames_demo:in_1(sel, atoms)
   self:handle_pd_message(sel, atoms)
 end
