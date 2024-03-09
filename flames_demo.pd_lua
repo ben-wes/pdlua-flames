@@ -37,6 +37,18 @@ end
 
 
 -------------------------------------------------------------------------------
+--                                       ██  
+--                             ▓▓      ██    
+--                                 ████▒▒██  
+--                               ████▓▓████  
+--                             ██▓▓▓▓▒▒██    
+--                             ██▓▓▓▓▓▓██    
+--                           ████▒▒▓▓▓▓████  
+--                           ██▒▒▓▓░░▓▓▒▒▓▓██
+--                           ██████▓▓░░▓▓░░██
+--                             ██░░░░▒▒░░████
+--                             ██░░  ░░░░██  
+--                               ░░    ░░
 
 -- initializing methods and state (with defaults or given arguments)
 --
@@ -62,7 +74,7 @@ function pd_flames:init_pd_methods(sel, methods, atoms)
       collectKey = string.sub(atom, 2)
       kwargs[collectKey] = {}
     elseif collectKey then
-      -- if currently collecting values for a key, add this atom to that key's table
+      -- if collecting values for a key, add atom to current key's table
       table.insert(kwargs[collectKey], atom)
     else
       -- otherwise treat as a positional argument
