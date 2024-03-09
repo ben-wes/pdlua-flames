@@ -16,7 +16,7 @@ function flames:initialize(sel, args)
   {
     { name = "threevalues", default = {1, 2, 3} },
     { name = "onevalue",    default = {0}       },
-    { name = "novalue"}
+    { name = "novalue"                          }
   }
   pd_mixin:init_pd_methods(self, methods, args)
   return true
