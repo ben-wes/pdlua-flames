@@ -1,7 +1,7 @@
-local flames = pd.Class:new():register("flames")
-local pd_mixin = {}
+local flames_demo = pd.Class:new():register("flames_demo")
+local pd_flames = {}
 
-function flames:initialize(sel, args)
+function flames_demo:initialize(sel, args)
   self.inlets = {DATA, DATA}
   -- define methods that are handled for defaults, messages and creation args
   --
@@ -12,25 +12,25 @@ function flames:initialize(sel, args)
     { name = "onevalue",    default = {0}       },
     { name = "novalue"                          }
   }
-  pd_mixin:init_pd_methods(self, methods, args)
+  pd_flames:init_pd_methods(self, methods, args)
   return true
 end
 
 -- defined methods will be called with 'pd_' prefix
-function flames:pd_threevalues(x)
+function flames_demo:pd_threevalues(x)
   pd.post('values are '..table.concat(x, " "))
 end
 
-function flames:pd_onevalue(x)
+function flames_demo:pd_onevalue(x)
   pd.post('one value is '..x[1])
 end
 
-function flames:pd_novalue()
+function flames_demo:pd_novalue()
   pd.post('no value here')
 end
 
 -- message are then handled with the handle_pd_message method
-function flames:in_1(sel, atoms)
+function flames_demo:in_1(sel, atoms)
   self:handle_pd_message(sel, atoms)
 end
 
@@ -45,9 +45,9 @@ end
 -- 1. get corresponding function is defined
 -- 2. get state index for saving method states
 -- 3. get method's argument count
-function pd_mixin:init_pd_methods(sel, methods, atoms)
+function pd_flames:init_pd_methods(sel, methods, atoms)
   -- mix in handle_pd_message() method to object's methods
-  sel["handle_pd_message"] = pd_mixin["handle_pd_message"]
+  sel["handle_pd_message"] = pd_flames["handle_pd_message"]
 
   sel.pd_method_table = {}
   sel.pd_args = {}
@@ -100,7 +100,7 @@ function pd_mixin:init_pd_methods(sel, methods, atoms)
 end
 
 -- handle messages and update state
-function pd_mixin:handle_pd_message(msg, atoms)
+function pd_flames:handle_pd_message(msg, atoms)
   if self.pd_method_table[msg] then
     local startIndex = self.pd_method_table[msg].index
     local valueCount = self.pd_method_table[msg].arg_count
