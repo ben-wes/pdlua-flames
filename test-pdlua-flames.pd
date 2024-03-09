@@ -3,7 +3,7 @@
 #X msg 243 131 bla;
 #X msg 47 44 novalue;
 #X msg 243 44 load flames/flames.pd_lua;
-#X obj 46 234 flames 4 5 6 foo;
+#X obj 46 234 flames 3 2 1 foo;
 #X msg 64 126 threevalues 3 2 1;
 #X text 153 234 create with '-threevalues x y z' etc. to test flags;
 #X msg 64 96 threevalues 4 5 6;

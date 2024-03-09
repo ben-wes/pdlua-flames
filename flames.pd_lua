@@ -46,7 +46,8 @@ end
 -- 2. get state index for saving method states
 -- 3. get method's argument count
 function pd_mixin:init_pd_methods(sel, methods, atoms)
-  for k, v in pairs(pd_mixin) do sel[k] = v end
+  -- mix in handle_pd_message() method to object's methods
+  sel["handle_pd_message"] = pd_mixin["handle_pd_message"]
 
   sel.pd_method_table = {}
   sel.pd_args = {}
