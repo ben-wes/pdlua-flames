@@ -1,4 +1,5 @@
 local flames = pd.Class:new():register("flames")
+local pd_mixin = {}
 
 function flames:initialize(sel, args)
   self.inlets = {DATA, DATA}
@@ -10,6 +11,7 @@ function flames:initialize(sel, args)
     { name = "onevalue",    default = {0}       },
     { name = "novalue"}
   }
+  for k, v in pairs(pd_mixin) do self[k] = v end
   self:init_pd_methods(methods, args)
   return true
 end
@@ -42,7 +44,7 @@ end
 -- 1. get corresponding function is defined
 -- 2. get state index for saving method states
 -- 3. get method's argument count
-function flames:init_pd_methods(methods, atoms)
+function pd_mixin:init_pd_methods(methods, atoms)
   self.pd_method_table = {}
   self.pd_args = {}
 
@@ -94,7 +96,7 @@ function flames:init_pd_methods(methods, atoms)
 end
 
 -- handle messages and update state
-function flames:handle_pd_message(msg, atoms)
+function pd_mixin:handle_pd_message(msg, atoms)
   if self.pd_method_table[msg] then
     local startIndex = self.pd_method_table[msg].index
     local valueCount = self.pd_method_table[msg].arg_count
