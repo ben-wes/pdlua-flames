@@ -1,2 +1,2 @@
 # pdlua-flames
-a simple pdlua example handling **fla**gs, **me**ssages and **s**tate saving
+a simple pdlua example for handling **fla**gs, **me**ssages and **s**tate management
