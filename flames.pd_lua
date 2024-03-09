@@ -4,6 +4,7 @@ local pd_mixin = {}
 function flames:initialize(sel, args)
   self.inlets = {DATA, DATA}
   -- define methods that are handled for defaults, messages and creation args
+  --
   -- defaults are required for all methods with arguments
   local methods =
   {
@@ -11,12 +12,11 @@ function flames:initialize(sel, args)
     { name = "onevalue",    default = {0}       },
     { name = "novalue"}
   }
-  for k, v in pairs(pd_mixin) do self[k] = v end
-  self:init_pd_methods(methods, args)
+  pd_mixin:init_pd_methods(self, methods, args)
   return true
 end
 
--- defined methods get called with 'pd_' prefix
+-- defined methods will be called with 'pd_' prefix
 function flames:pd_threevalues(x)
   pd.post('values are '..table.concat(x, " "))
 end
@@ -29,6 +29,7 @@ function flames:pd_novalue()
   pd.post('no value here')
 end
 
+-- message are then handled with the handle_pd_message method
 function flames:in_1(sel, atoms)
   self:handle_pd_message(sel, atoms)
 end
@@ -44,9 +45,11 @@ end
 -- 1. get corresponding function is defined
 -- 2. get state index for saving method states
 -- 3. get method's argument count
-function pd_mixin:init_pd_methods(methods, atoms)
-  self.pd_method_table = {}
-  self.pd_args = {}
+function pd_mixin:init_pd_methods(sel, methods, atoms)
+  for k, v in pairs(pd_mixin) do sel[k] = v end
+
+  sel.pd_method_table = {}
+  sel.pd_args = {}
 
   -- handle kwargs and args
   local kwargs = {}
@@ -70,28 +73,28 @@ function pd_mixin:init_pd_methods(methods, atoms)
   for _, v in ipairs(methods) do
     local method_name = "pd_" .. v.name
     -- initialize method table entry if a corresponding method exists
-    if self[method_name] and type(self[method_name]) == "function" then
-      self.pd_method_table[v.name] = {
-        func = self[method_name]
+    if sel[method_name] and type(sel[method_name]) == "function" then
+      sel.pd_method_table[v.name] = {
+        func = sel[method_name]
       }
       -- process initial defaults
       if v.default then
         -- initialize entry for storing index and arg count
-        self.pd_method_table[v.name] = self.pd_method_table[v.name] or {}
-        self.pd_method_table[v.name].index = valueIndex
-        self.pd_method_table[v.name].arg_count = #v.default
+        sel.pd_method_table[v.name] = sel.pd_method_table[v.name] or {}
+        sel.pd_method_table[v.name].index = valueIndex
+        sel.pd_method_table[v.name].arg_count = #v.default
         -- populate pd_args with defaults
         for _, value in ipairs(v.default) do
-          self.pd_args[valueIndex] = atoms[valueIndex] or value
+          sel.pd_args[valueIndex] = atoms[valueIndex] or value
           valueIndex = valueIndex + 1
         end
       end
     else
-      self:error('no function \''..method_name..'\' defined')
+      sel:error('no function \''..method_name..'\' defined')
     end
   end
   for msg, values in pairs(kwargs) do
-    self:handle_pd_message(msg, values)
+    sel:handle_pd_message(msg, values)
   end
 end
 
@@ -114,6 +117,6 @@ function pd_mixin:handle_pd_message(msg, atoms)
     -- update object state
     self:set_args(self.pd_args)
   else
-    self:error('missing method definition for `'..msg..'\'')
+    self:error('missing method definition: `pd_'..msg..'\'')
   end
 end
