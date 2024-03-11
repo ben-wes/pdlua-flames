@@ -104,7 +104,7 @@ function pd_flames:init_pd_methods(name, sel, methods, atoms)
         sel.pd_method_table[v.name].arg_count = #v.default
         -- populate pd_args with defaults
         for _, value in ipairs(v.default) do
-          sel.pd_args[valueIndex] = atoms[valueIndex] or value
+          sel.pd_args[valueIndex] = args[valueIndex] or value
           valueIndex = valueIndex + 1
         end
       end
