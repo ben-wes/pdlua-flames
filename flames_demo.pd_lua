@@ -57,8 +57,8 @@ end
 -- initializing methods and state (with defaults or given arguments)
 --
 -- creates self.pd_args for saving state,
--- self.pd_name for the object name (e.g. in error/log output)
--- and self.pd_method_table for look-ups:
+-- self.pd_name for the object name (used in error log)
+-- and self.pd_method_table for look-ups of:
 -- 1. corresponding function if defined
 -- 2. state index for saving method states
 -- 3. method's argument count
