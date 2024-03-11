@@ -1,7 +1,7 @@
 local flames_demo = pd.Class:new():register("flames_demo")
 local pd_flames = {}
 
-function flames_demo:initialize(sel, args)
+function flames_demo:initialize(name, args)
   self.inlets = {DATA, DATA}
   -- define methods that are handled for defaults, messages and creation args
   --
@@ -10,15 +10,16 @@ function flames_demo:initialize(sel, args)
   {
     { name = "threevalues", default = {1, 2, 3} },
     { name = "onevalue",    default = {0}       },
-    { name = "novalue"                          }
+    { name = "novalue"                          },
+    { name = "thisismissingafunction"           }
   }
-  pd_flames:init_pd_methods(self, methods, args)
+  pd_flames:init_pd_methods(name, self, methods, args)
   return true
 end
 
 -- defined methods will be called with 'pd_' prefix
 function flames_demo:pd_threevalues(x)
-  pd.post('values are '..table.concat(x, " "))
+  pd.post('values are ' .. table.concat(x, " "))
 end
 
 function flames_demo:pd_onevalue(x)
@@ -29,9 +30,12 @@ function flames_demo:pd_novalue()
   pd.post('no value here')
 end
 
--- messages are then handled with the handle_pd_message() method
-function flames_demo:in_1(sel, atoms)
-  self:handle_pd_message(sel, atoms)
+-- messages are then handled with handle_pd_message()
+--
+-- an optional inlet number can be defined to provide
+-- a more detailed error message (if no method exists)
+function flames_demo:in_n(n, sel, atoms)
+  self:handle_pd_message(sel, atoms, n)
 end
 
 
@@ -52,15 +56,17 @@ end
 
 -- initializing methods and state (with defaults or given arguments)
 --
--- creates self.pd_args for saving state
+-- creates self.pd_args for saving state,
+-- self.pd_name for the object name (e.g. in error/log output)
 -- and self.pd_method_table for look-ups:
--- 1. get corresponding function is defined
--- 2. get state index for saving method states
--- 3. get method's argument count
-function pd_flames:init_pd_methods(sel, methods, atoms)
+-- 1. corresponding function if defined
+-- 2. state index for saving method states
+-- 3. method's argument count
+function pd_flames:init_pd_methods(name, sel, methods, atoms)
   -- mix in handle_pd_message() method to object's methods
-  sel["handle_pd_message"] = pd_flames["handle_pd_message"]
+  sel.handle_pd_message = pd_flames.handle_pd_message
 
+  sel.pd_name = name
   sel.pd_method_table = {}
   sel.pd_args = {}
 
@@ -103,7 +109,7 @@ function pd_flames:init_pd_methods(sel, methods, atoms)
         end
       end
     else
-      sel:error('no function \''..method_name..'\' defined')
+      sel:error(name..': no function \'' .. method_name .. '\' defined')
     end
   end
   for msg, values in pairs(kwargs) do
@@ -112,7 +118,7 @@ function pd_flames:init_pd_methods(sel, methods, atoms)
 end
 
 -- handle messages and update state
-function pd_flames:handle_pd_message(msg, atoms)
+function pd_flames:handle_pd_message(msg, atoms, n)
   if self.pd_method_table[msg] then
     local startIndex = self.pd_method_table[msg].index
     local valueCount = self.pd_method_table[msg].arg_count
@@ -130,6 +136,8 @@ function pd_flames:handle_pd_message(msg, atoms)
     -- update object state
     self:set_args(self.pd_args)
   else
-    self:error('missing method definition: `pd_'..msg..'\'')
+    local baseMessage = self.pd_name .. ': no method for \'' .. msg .. '\''
+    local inletMessage = n and ' on inlet ' .. string.format("%d", n) or ''
+    self:error(baseMessage .. inletMessage)
   end
 end

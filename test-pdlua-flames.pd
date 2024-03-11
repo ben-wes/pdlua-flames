@@ -10,6 +10,8 @@
 #X msg 203 210 blubb;
 #X obj 46 234 flames_demo 4 5 6 foo;
 #X msg 203 44 load flames_demo/flames_demo.pd_lua;
+#X obj 292 146 osc~;
+#X msg 314 115 bla;
 #X connect 1 0 9 0;
 #X connect 2 0 9 0;
 #X connect 3 0 9 0;
@@ -18,3 +20,4 @@
 #X connect 7 0 9 0;
 #X connect 8 0 9 1;
 #X connect 10 0 0 0;
+#X connect 12 0 11 0;
