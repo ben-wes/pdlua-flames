@@ -22,7 +22,7 @@ function flames_demo:initialize(name, args)
     { name = "threevalues", defaults = {1, 2, 3} },
     { name = "onevalue",    defaults = {0}       },
     { name = "novalue"                           },
-    { name = "thisismissingafunction"            }
+    { name = "entry_but_no_function"             }  -- this creates a warning
   }
   pd_flames:init_pd_methods(self, name, methods, args)
   return true
