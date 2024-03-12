@@ -12,7 +12,7 @@ function flames_demo:initialize(name, args)
     { name = "novalue"                           },
     { name = "thisismissingafunction"            }
   }
-  pd_flames:init_pd_methods(name, self, methods, args)
+  pd_flames:init_pd_methods(self, name, methods, args)
   return true
 end
 
@@ -60,7 +60,7 @@ end
 --     1. corresponding function if defined
 --     2. state index for saving method states
 --     3. method's argument count
-function pd_flames:init_pd_methods(name, pdclass, methods, atoms)
+function pd_flames:init_pd_methods(pdclass, name, methods, atoms)
   pdclass.handle_pd_message = pd_flames.handle_pd_message
   pdclass.pd_name = name
   pdclass.pd_method_table = {}

@@ -24,7 +24,7 @@ function flames_demo:initialize(name, args)
     { name = "novalue"                           },
     { name = "thisismissingafunction"            }
   }
-  pd_flames:init_pd_methods(name, self, methods, args)
+  pd_flames:init_pd_methods(self, name, methods, args)
   return true
 end
 
