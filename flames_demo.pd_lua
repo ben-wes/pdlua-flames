@@ -8,10 +8,10 @@ function flames_demo:initialize(name, args)
   -- defaults are required for all methods with arguments
   local methods =
   {
-    { name = "threevalues", default = {1, 2, 3} },
-    { name = "onevalue",    default = {0}       },
-    { name = "novalue"                          },
-    { name = "thisismissingafunction"           }
+    { name = "threevalues", defaults = {1, 2, 3} },
+    { name = "onevalue",    defaults = {0}       },
+    { name = "novalue"                           },
+    { name = "thisismissingafunction"            }
   }
   pd_flames:init_pd_methods(name, self, methods, args)
   return true
@@ -23,7 +23,7 @@ function flames_demo:pd_threevalues(x)
 end
 
 function flames_demo:pd_onevalue(x)
-  pd.post('one value is '..x[1])
+  pd.post('one value is ' .. x[1])
 end
 
 function flames_demo:pd_novalue()
@@ -62,15 +62,42 @@ end
 -- 1. corresponding function if defined
 -- 2. state index for saving method states
 -- 3. method's argument count
-function pd_flames:init_pd_methods(name, sel, methods, atoms)
-  -- mix in handle_pd_message() method to object's methods
-  sel.handle_pd_message = pd_flames.handle_pd_message
+function pd_flames:init_pd_methods(name, pdclass, methods, atoms)
+  pdclass.handle_pd_message = pd_flames.handle_pd_message
+  pdclass.pd_name = name
+  pdclass.pd_method_table = {}
+  pdclass.pd_args = {}
 
-  sel.pd_name = name
-  sel.pd_method_table = {}
-  sel.pd_args = {}
+  local kwargs, args = self:parse_atoms(atoms)
+  local argIndex = 1
+  for _, method in ipairs(methods) do
+    local pd_method_name = "pd_" .. method.name
+    -- initialize method table entry if a corresponding method exists
+    if pdclass[pd_method_name] and type(pdclass[pd_method_name]) == "function" then
+      pdclass.pd_method_table[method.name] = { func = pdclass[pd_method_name] }
+      -- process initial defaults
+      if method.defaults then
+        -- initialize entry for storing index and arg count
+        local methodEntry = pdclass.pd_method_table[method.name]
+        pdclass.pd_method_table[method.name] = methodEntry or {}
+        pdclass.pd_method_table[method.name].index = argIndex
+        pdclass.pd_method_table[method.name].arg_count = #method.defaults
+        -- populate pd_args with defaults
+        for _, value in ipairs(method.defaults) do
+          pdclass.pd_args[argIndex] = args[argIndex] or value
+          argIndex = argIndex + 1
+        end
+      end
+    else
+      pdclass:error(name..': no function \'' .. pd_method_name .. '\' defined')
+    end
+  end
+  for sel, atoms in pairs(kwargs) do
+    pdclass:handle_pd_message(sel, atoms)
+  end
+end
 
-  -- handle kwargs and args
+function pd_flames:parse_atoms(atoms)
   local kwargs = {}
   local args = {}
   local collectKey = nil
@@ -87,41 +114,14 @@ function pd_flames:init_pd_methods(name, sel, methods, atoms)
       table.insert(args, atom)
     end
   end
-
-  local valueIndex = 1 -- index for pd_args and atoms
-  for _, v in ipairs(methods) do
-    local method_name = "pd_" .. v.name
-    -- initialize method table entry if a corresponding method exists
-    if sel[method_name] and type(sel[method_name]) == "function" then
-      sel.pd_method_table[v.name] = {
-        func = sel[method_name]
-      }
-      -- process initial defaults
-      if v.default then
-        -- initialize entry for storing index and arg count
-        sel.pd_method_table[v.name] = sel.pd_method_table[v.name] or {}
-        sel.pd_method_table[v.name].index = valueIndex
-        sel.pd_method_table[v.name].arg_count = #v.default
-        -- populate pd_args with defaults
-        for _, value in ipairs(v.default) do
-          sel.pd_args[valueIndex] = args[valueIndex] or value
-          valueIndex = valueIndex + 1
-        end
-      end
-    else
-      sel:error(name..': no function \'' .. method_name .. '\' defined')
-    end
-  end
-  for msg, values in pairs(kwargs) do
-    sel:handle_pd_message(msg, values)
-  end
+  return kwargs, args
 end
 
 -- handle messages and update state
-function pd_flames:handle_pd_message(msg, atoms, n)
-  if self.pd_method_table[msg] then
-    local startIndex = self.pd_method_table[msg].index
-    local valueCount = self.pd_method_table[msg].arg_count
+function pd_flames:handle_pd_message(sel, atoms, n)
+  if self.pd_method_table[sel] then
+    local startIndex = self.pd_method_table[sel].index
+    local valueCount = self.pd_method_table[sel].arg_count
     local values = {}
     if startIndex and valueCount then
       for i, atom in ipairs(atoms) do
@@ -131,12 +131,13 @@ function pd_flames:handle_pd_message(msg, atoms, n)
       end
     end
     -- run method with clipped atoms
-    local method = self.pd_method_table[msg].func
-    if method then method(self, values) end
+    if self.pd_method_table[sel].func then
+      self.pd_method_table[sel].func(self, values)
+    end
     -- update object state
     self:set_args(self.pd_args)
   else
-    local baseMessage = self.pd_name .. ': no method for \'' .. msg .. '\''
+    local baseMessage = self.pd_name .. ': no method for \'' .. sel .. '\''
     local inletMessage = n and ' on inlet ' .. string.format("%d", n) or ''
     self:error(baseMessage .. inletMessage)
   end
