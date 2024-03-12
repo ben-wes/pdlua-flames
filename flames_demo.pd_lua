@@ -3,8 +3,7 @@ local pd_flames = {}
 
 function flames_demo:initialize(name, args)
   self.inlets = {DATA, DATA}
-  -- define methods that are handled for defaults, messages and creation args
-  --
+  -- define methods to be handled for defaults, messages and creation args
   -- defaults are required for all methods with arguments
   local methods =
   {
@@ -30,14 +29,13 @@ function flames_demo:pd_novalue()
   pd.post('no value here')
 end
 
--- messages are then handled with handle_pd_message()
+-- messages are handled with handle_pd_message()
 --
--- an optional inlet number can be defined to provide
--- a more detailed error message (if no method exists)
+-- an optional inlet number can be given to provide
+-- more detailed error messages (if no method exists)
 function flames_demo:in_n(n, sel, atoms)
   self:handle_pd_message(sel, atoms, n)
 end
-
 
 
 -------------------------------------------------------------------------------
@@ -53,15 +51,15 @@ end
 --                             ██░░░░▒▒░░████
 --                             ██░░  ░░░░██  
 --                               ░░    ░░
-
--- initializing methods and state (with defaults or given arguments)
 --
--- creates self.pd_args for saving state,
--- self.pd_name for the object name (used in error log)
--- and self.pd_method_table for look-ups of:
--- 1. corresponding function if defined
--- 2. state index for saving method states
--- 3. method's argument count
+-- initializing methods and state (with defaults or creation arguments)
+-- creates:
+--   * self.pd_args for saving state
+--   * self.pd_name for the object name (used in error log)
+--   * self.pd_method_table for look-ups of:
+--     1. corresponding function if defined
+--     2. state index for saving method states
+--     3. method's argument count
 function pd_flames:init_pd_methods(name, pdclass, methods, atoms)
   pdclass.handle_pd_message = pd_flames.handle_pd_message
   pdclass.pd_name = name
@@ -118,6 +116,7 @@ function pd_flames:parse_atoms(atoms)
 end
 
 -- handle messages and update state
+-- function gets mixed into object's class for use as self:handle_pd_messages
 function pd_flames:handle_pd_message(sel, atoms, n)
   if self.pd_method_table[sel] then
     local startIndex = self.pd_method_table[sel].index

@@ -15,15 +15,14 @@ local pd_flames = {}
 
 function flames_demo:initialize(name, args)
   self.inlets = {DATA, DATA}
-  -- define methods that are handled for defaults, messages and creation args
-  --
+  -- define methods to be handled for defaults, messages and creation args
   -- defaults are required for all methods with arguments
   local methods =
   {
-    { name = "threevalues", default = {1, 2, 3} },
-    { name = "onevalue",    default = {0}       },
-    { name = "novalue"                          },
-    { name = "thisismissingafunction"           }
+    { name = "threevalues", defaults = {1, 2, 3} },
+    { name = "onevalue",    defaults = {0}       },
+    { name = "novalue"                           },
+    { name = "thisismissingafunction"            }
   }
   pd_flames:init_pd_methods(name, self, methods, args)
   return true
@@ -35,17 +34,17 @@ function flames_demo:pd_threevalues(x)
 end
 
 function flames_demo:pd_onevalue(x)
-  pd.post('one value is '..x[1])
+  pd.post('one value is ' .. x[1])
 end
 
 function flames_demo:pd_novalue()
   pd.post('no value here')
 end
 
--- messages are then handled with handle_pd_message()
+-- messages are handled with handle_pd_message()
 --
--- an optional inlet number can be defined to provide
--- a more detailed error message (if no method exists)
+-- an optional inlet number can be given to provide
+-- more detailed error messages (if no method exists)
 function flames_demo:in_n(n, sel, atoms)
   self:handle_pd_message(sel, atoms, n)
 end
