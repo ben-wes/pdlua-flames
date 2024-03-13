@@ -13,7 +13,7 @@ for an intro to the GUI drawing capabilities, see:
 
 ---
 
-the actual functionality of the `.pd_lua` file is then defined above the `pd_flames` methods as follows and will take care of handling incoming messages, creation flags and state saving/restoring:
+the actual functionality of the `.pd_lua` file is then defined above the [flames](https://github.com/ben-wes/pdlua-flames/blob/main/flames_demo.pd_lua#L41) as follows and will take care of handling incoming messages, creation flags and state saving/restoring:
 
 ~~~ lua
 local flames_demo = pd.Class:new():register("flames_demo")
