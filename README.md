@@ -10,10 +10,8 @@ requires Pd (Pure Data) or plugdata with up-to-date `pdlua` extension:
 
 ## introduction to pdlua
 
-for an intro on creating Pd objects with `pdlua`, see:
+for an intro on creating Pd objects with `pdlua`, see object's help in Pd and:
 * https://agraef.github.io/pd-lua/tutorial/pd-lua-intro.html
-
-for an intro to the GUI drawing capabilities, see:
 * https://raw.githubusercontent.com/timothyschoen/pd-lua/master/doc/graphics.txt
 
 ## usage
