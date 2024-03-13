@@ -1,5 +1,5 @@
 # pdlua-flames
-a simple pdlua example object handling **fla**gs, **me**ssages and **s**tate management
+simple `pdlua` example object with helper methods handling **fla**gs, **me**ssages and **s**tate management
 
 requires Pd (Pure Data) and up-to-date `pdlua` extension:
 * https://puredata.info/downloads
