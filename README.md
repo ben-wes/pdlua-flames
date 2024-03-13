@@ -5,9 +5,15 @@ requires Pd (Pure Data) and up-to-date `pdlua` extension:
 * https://puredata.info/downloads
 * https://github.com/agraef/pd-lua 
 
+for an intro on creating Pd objects with `pdlua`, see:
+* https://agraef.github.io/pd-lua/tutorial/pd-lua-intro.html
+
+for an intro to the GUI drawing capabilities, see:
+* https://raw.githubusercontent.com/timothyschoen/pd-lua/master/doc/graphics.txt
+
 ---
 
-the actual functionality of the pdlua object is then defined like this:
+the actual functionality of the `.pd_lua` file is then defined above the `pd_flames` methods as follows and will take care of handling incoming messages, creation flags and state saving/restoring:
 
 ~~~ lua
 local flames_demo = pd.Class:new():register("flames_demo")
