@@ -1,9 +1,13 @@
 # pdlua-flames
 simple `pdlua` example object with helper methods handling **fla**gs, **me**ssages and **s**tate management
 
+## setup
+
 requires Pd (Pure Data) and up-to-date `pdlua` extension:
 * https://puredata.info/downloads
 * https://github.com/agraef/pd-lua 
+
+## introduction to pdlua
 
 for an intro on creating Pd objects with `pdlua`, see:
 * https://agraef.github.io/pd-lua/tutorial/pd-lua-intro.html
@@ -11,7 +15,7 @@ for an intro on creating Pd objects with `pdlua`, see:
 for an intro to the GUI drawing capabilities, see:
 * https://raw.githubusercontent.com/timothyschoen/pd-lua/master/doc/graphics.txt
 
----
+## usage
 
 the actual functionality of the `.pd_lua` file is then defined above the [flames](https://github.com/ben-wes/pdlua-flames/blob/main/flames_demo.pd_lua#L41) as follows and will take care of handling incoming messages, creation flags and state saving/restoring:
 
