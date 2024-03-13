@@ -3,10 +3,10 @@ simple `pdlua` example object with helper methods handling **fla**gs, **me**ssag
 
 ## setup
 
-requires Pd (Pure Data) or plugdata with up-to-date `pdlua` extension:
+requires Pd (Pure Data) with up-to-date `pdlua` extension or `plugdata` (which already includes `pdlua`):
 * https://puredata.info/downloads
-* https://plugdata.org/
 * https://github.com/agraef/pd-lua 
+* https://plugdata.org/
 
 ## introduction to pdlua
 
