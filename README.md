@@ -10,7 +10,7 @@ requires either `Pd (Pure Data)` with up-to-date `pdlua` extension or a current 
 
 ## introduction to pdlua
 
-for an intro on creating Pd objects with `pdlua`, see object's help in Pd and:
+for an intro on creating Pd objects with `pdlua`, see object's help (the object itself is named `pdlua`) and/or:
 * https://agraef.github.io/pd-lua/tutorial/pd-lua-intro.html
 * https://raw.githubusercontent.com/timothyschoen/pd-lua/master/doc/graphics.txt
 
