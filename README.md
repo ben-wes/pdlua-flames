@@ -1,26 +1,26 @@
 # pdlua-flames
-simple `pdlua` example object with helper methods handling **fla**gs, **me**ssages and **s**tate management
+Simple `pdlua` module handling **fla**gs, **me**ssages and **s**tate management
 
-## setup
+## Requirements
 
-requires either `Pd (Pure Data)` with up-to-date `pdlua` extension or a current version of `plugdata` (which already includes `pdlua`):
+Requires either `Pd (Pure Data)` with up-to-date `pdlua` extension or a current version of `plugdata` (which already includes `pdlua`):
 * https://puredata.info/downloads
 * https://github.com/agraef/pd-lua 
 * https://plugdata.org/
 
-## introduction to pdlua
+## Intro to pdlua
 
-for an intro on creating Pd objects with `pdlua`, see object's help (the object itself is named `pdlua`) and/or:
+For an intro on creating Pd objects with `pdlua`, see object's help (the object itself is named `pdlua`) and/or:
 * https://agraef.github.io/pd-lua/tutorial/pd-lua-intro.html
 * https://raw.githubusercontent.com/timothyschoen/pd-lua/master/doc/graphics.txt
 
-## usage
+## Usage
 
-the actual functionality of the `.pd_lua` file is then defined above the [flames](https://github.com/ben-wes/pdlua-flames/blob/main/flames_demo.pd_lua#L41) as follows and will take care of handling incoming messages, creation flags and state saving/restoring:
+A basic `.pd_lua` object is created as follows and [flames](https://github.com/ben-wes/pdlua-flames/blob/main/pdlua_flames.lua) will take care of handling incoming messages, creation flags and state saving/restoring:
 
 ~~~ lua
+local flames = require("pdlua_flames") -- include module
 local flames_demo = pd.Class:new():register("flames_demo")
-local pd_flames = {}
 
 function flames_demo:initialize(name, args)
   self.inlets = {DATA, DATA}
@@ -29,11 +29,12 @@ function flames_demo:initialize(name, args)
   local methods =
   {
     { name = "threevalues", defaults = {1, 2, 3} },
-    { name = "onevalue",    defaults = {0}       },
+    { name = "thirdvalue",  defaults = {3},
+                            offset   = -1        }, -- same as 3rd value above
     { name = "novalue"                           },
     { name = "entry_but_no_function"             }  -- this creates a warning
   }
-  pd_flames:init_pd_methods(self, name, methods, args)
+  flames:init_pd_methods(self, name, methods, args)
   return true
 end
 
@@ -42,7 +43,7 @@ function flames_demo:pd_threevalues(x)
   pd.post('values are ' .. table.concat(x, " "))
 end
 
-function flames_demo:pd_onevalue(x)
+function flames_demo:pd_thirdvalue(x)
   pd.post('one value is ' .. x[1])
 end
 
