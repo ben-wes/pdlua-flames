@@ -32,24 +32,24 @@ function pdlua_flames:init_pd_methods(pdclass, name, methods, atoms)
   local kwargs, args = self:parse_atoms(atoms)
   local argIndex = 1
   for _, method in ipairs(methods) do
-    local pd_method_name = "pd_" .. method.name
-    -- initialize method table entry if a corresponding method exists
-    if pdclass[pd_method_name] and type(pdclass[pd_method_name]) == "function" then
-      pdclass.pd_methods[method.name] = { func = pdclass[pd_method_name] }
-      -- process initial defaults
-      if method.defaults then
-        if method.offset then argIndex = argIndex + method.offset end
-        -- initialize entry for storing index and arg count
-        local methodEntry = pdclass.pd_methods[method.name]
-        pdclass.pd_methods[method.name] = methodEntry or {}
-        pdclass.pd_methods[method.name].index = argIndex
-        pdclass.pd_methods[method.name].arg_count = #method.defaults
-        -- populate pd_args with defaults
-        for _, value in ipairs(method.defaults) do
-          pdclass.pd_args[argIndex] = args[argIndex] or value
-          argIndex = argIndex + 1
-        end
+    pdclass.pd_methods[method.name] = {}
+    -- process initial defaults
+    if method.defaults then
+      if method.offset then argIndex = argIndex + method.offset end
+      -- initialize entry for storing index and arg count and values
+      pdclass.pd_methods[method.name].index = argIndex
+      pdclass.pd_methods[method.name].arg_count = #method.defaults
+      pdclass.pd_methods[method.name].values = method.defaults
+      -- populate pd_args with defaults
+      for _, value in ipairs(method.defaults) do
+        pdclass.pd_args[argIndex] = args[argIndex] or value
+        argIndex = argIndex + 1
       end
+    end
+    -- add method if a corresponding method exists
+    local pd_method_name = "pd_" .. method.name
+    if pdclass[pd_method_name] and type(pdclass[pd_method_name]) == "function" then
+      pdclass.pd_methods[method.name].func = pdclass[pd_method_name]
     else
       pdclass:error(name..': no function \'' .. pd_method_name .. '\' defined')
     end
