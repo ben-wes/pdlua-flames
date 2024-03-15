@@ -19,8 +19,8 @@ For an intro on creating Pd objects with `pdlua`, see object's help (the object 
 A basic `.pd_lua` object is created as follows and [flames](https://github.com/ben-wes/pdlua-flames/blob/main/pdlua_flames.lua) will take care of handling incoming messages, creation flags and state saving/restoring:
 
 ~~~ lua
-local flames = require("pdlua_flames") -- include module
-local flames_demo = pd.Class:new():register("flames_demo")
+local pdlua_flames = require('pdlua_flames') -- include module
+local flames_demo = pd.Class:new():register('flames_demo')
 
 function flames_demo:initialize(name, args)
   self.inlets = {DATA, DATA}
@@ -28,27 +28,43 @@ function flames_demo:initialize(name, args)
   -- defaults are required for all methods with arguments
   local methods =
   {
-    { name = "threevalues", defaults = {1, 2, 3} },
-    { name = "thirdvalue",  defaults = {3},
-                            offset   = -1        }, -- same as 3rd value above
-    { name = "novalue"                           },
-    { name = "entry_but_no_function"             }  -- this creates a warning
+    { name = 'onevalue',    defaults = {'foo'}   },
+    { name = 'threevalues', defaults = {1, 2, 3} },
+    { name = 'thirdvalue',                       }, -- gets configure to set 3rd value above
+    { name = 'novalue'                           },
+    { name = 'list',        defaults = {0, 0}    }, -- handles list input
+    { name = 'entry_but_no_function'             }  -- this creates a warning
   }
-  flames:init_pd_methods(self, name, methods, args)
+  pdlua_flames:init_pd_methods(self, name, methods, args)
   return true
 end
 
+function flames_demo:postinitialize()
+end
+
 -- defined methods will be called with 'pd_' prefix
+function flames_demo:pd_onevalue(x)
+  pd.post('onevalue is always set to "bar" despite '..x[1])
+  return {'bar'}
+end
+
 function flames_demo:pd_threevalues(x)
-  pd.post('values are ' .. table.concat(x, " "))
+  pd.post('threevalues: ' .. table.concat(x, ' '))
 end
 
 function flames_demo:pd_thirdvalue(x)
-  pd.post('one value is ' .. x[1])
+  pd.post('third value of threevalues set to ' .. x[1])
+  local allAtoms = self.pd_methods.threevalues.val
+  allAtoms[3] = x[1]
+  self:handle_pd_message('threevalues', allAtoms)
 end
 
 function flames_demo:pd_novalue()
   pd.post('no value here')
+end
+
+function flames_demo:pd_list(x)
+  pd.post('list: '..table.concat(x, ' '))
 end
 
 -- messages are handled with handle_pd_message()
