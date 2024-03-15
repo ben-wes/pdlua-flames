@@ -30,16 +30,13 @@ function flames_demo:initialize(name, args)
   {
     { name = 'onevalue',    defaults = {'foo'}   },
     { name = 'threevalues', defaults = {1, 2, 3} },
-    { name = 'thirdvalue',                       }, -- gets configure to set 3rd value above
+    { name = 'thirdvalue',                       }, -- configured to set 3rd value above
     { name = 'novalue'                           },
     { name = 'list',        defaults = {0, 0}    }, -- handles list input
     { name = 'entry_but_no_function'             }  -- this creates a warning
   }
   pdlua_flames:init_pd_methods(self, name, methods, args)
   return true
-end
-
-function flames_demo:postinitialize()
 end
 
 -- defined methods will be called with 'pd_' prefix
