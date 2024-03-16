@@ -89,7 +89,7 @@ function pdlua_flames:handle_pd_message(sel, atoms, n)
   if self.pd_methods[sel] then
     local startIndex = self.pd_methods[sel].index
     local valueCount = self.pd_methods[sel].arg_count
-    -- call function an save result (if returned)
+    -- call function and save result (if returned)
     local returnValues = self.pd_methods[sel].func and self.pd_methods[sel].func(self, atoms)
     local values = {}
     -- clip incoming values to arg_count
